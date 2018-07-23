@@ -1,0 +1,204 @@
+﻿<Activity mc:Ignorable="sap sap2010 sads" x:Class="ProcessTransaction"
+ xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities"
+ xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+ xmlns:mva="clr-namespace:Microsoft.VisualBasic.Activities;assembly=System.Activities"
+ xmlns:njl="clr-namespace:Newtonsoft.Json.Linq;assembly=Newtonsoft.Json"
+ xmlns:sads="http://schemas.microsoft.com/netfx/2010/xaml/activities/debugger"
+ xmlns:sap="http://schemas.microsoft.com/netfx/2009/xaml/activities/presentation"
+ xmlns:sap2010="http://schemas.microsoft.com/netfx/2010/xaml/activities/presentation"
+ xmlns:scg="clr-namespace:System.Collections.Generic;assembly=mscorlib"
+ xmlns:sco="clr-namespace:System.Collections.ObjectModel;assembly=mscorlib"
+ xmlns:sd="clr-namespace:System.Data;assembly=System.Data"
+ xmlns:ui="http://schemas.uipath.com/workflow/activities"
+ xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <x:Members>
+    <x:Property Name="in_TransactionItem" Type="InArgument(sd:DataRow)" />
+    <x:Property Name="in_Config" Type="InArgument(scg:Dictionary(x:String, x:Object))" />
+  </x:Members>
+  <mva:VisualBasic.Settings>
+    <x:Null />
+  </mva:VisualBasic.Settings>
+  <sap2010:WorkflowViewState.IdRef>ProcessTransaction_1</sap2010:WorkflowViewState.IdRef>
+  <TextExpression.NamespacesForImplementation>
+    <sco:Collection x:TypeArguments="x:String">
+      <x:String>System.Activities</x:String>
+      <x:String>System.Activities.Statements</x:String>
+      <x:String>System.Activities.Expressions</x:String>
+      <x:String>System.Activities.Validation</x:String>
+      <x:String>System.Activities.XamlIntegration</x:String>
+      <x:String>Microsoft.VisualBasic</x:String>
+      <x:String>Microsoft.VisualBasic.Activities</x:String>
+      <x:String>System</x:String>
+      <x:String>System.Collections</x:String>
+      <x:String>System.Collections.Generic</x:String>
+      <x:String>System.Data</x:String>
+      <x:String>System.Diagnostics</x:String>
+      <x:String>System.Drawing</x:String>
+      <x:String>System.IO</x:String>
+      <x:String>System.Linq</x:String>
+      <x:String>System.Net.Mail</x:String>
+      <x:String>System.Xml</x:String>
+      <x:String>System.Xml.Linq</x:String>
+      <x:String>UiPath.Core</x:String>
+      <x:String>UiPath.Core.Activities</x:String>
+      <x:String>System.Windows.Markup</x:String>
+      <x:String>Newtonsoft.Json.Linq</x:String>
+      <x:String>Newtonsoft.Json</x:String>
+    </sco:Collection>
+  </TextExpression.NamespacesForImplementation>
+  <TextExpression.ReferencesForImplementation>
+    <sco:Collection x:TypeArguments="AssemblyReference">
+      <AssemblyReference>System.Activities</AssemblyReference>
+      <AssemblyReference>Microsoft.VisualBasic</AssemblyReference>
+      <AssemblyReference>mscorlib</AssemblyReference>
+      <AssemblyReference>System.Data</AssemblyReference>
+      <AssemblyReference>System</AssemblyReference>
+      <AssemblyReference>System.Drawing</AssemblyReference>
+      <AssemblyReference>System.Core</AssemblyReference>
+      <AssemblyReference>System.Xml</AssemblyReference>
+      <AssemblyReference>System.Xml.Linq</AssemblyReference>
+      <AssemblyReference>UiPath.Core</AssemblyReference>
+      <AssemblyReference>UiPath.Core.Activities</AssemblyReference>
+      <AssemblyReference>PresentationFramework</AssemblyReference>
+      <AssemblyReference>WindowsBase</AssemblyReference>
+      <AssemblyReference>PresentationCore</AssemblyReference>
+      <AssemblyReference>System.Xaml</AssemblyReference>
+      <AssemblyReference>System.ComponentModel.Composition</AssemblyReference>
+      <AssemblyReference>System.ServiceModel</AssemblyReference>
+      <AssemblyReference>Microsoft.VisualStudio.Services.Common</AssemblyReference>
+      <AssemblyReference>System.Runtime.WindowsRuntime</AssemblyReference>
+      <AssemblyReference>System.Data.DataSetExtensions</AssemblyReference>
+      <AssemblyReference>UiPath.IntelligentOCR</AssemblyReference>
+      <AssemblyReference>UiPath.Python</AssemblyReference>
+      <AssemblyReference>Newtonsoft.Json</AssemblyReference>
+    </sco:Collection>
+  </TextExpression.ReferencesForImplementation>
+  <Sequence sap2010:Annotation.AnnotationText="Description: In this file all other process specific files will be invoked. If an application exception occurs, the current transaction can be retried. If a BRE is thrown, the transaction will be skipped. Can be a flowchart or sequence. " DisplayName="ProcessTransaction" sap2010:WorkflowViewState.IdRef="Sequence_1">
+    <Sequence.Variables>
+      <Variable x:TypeArguments="njl:JObject" Name="Issue" />
+      <Variable x:TypeArguments="x:String" Name="AssigneeId" />
+      <Variable x:TypeArguments="x:String" Name="StatusId" />
+      <Variable x:TypeArguments="x:String" Name="Comment" />
+      <Variable x:TypeArguments="x:String" Name="ResolutionId" />
+    </Sequence.Variables>
+    <Sequence DisplayName="課題情報の取得" sap2010:WorkflowViewState.IdRef="Sequence_2">
+      <ui:InvokeWorkflowFile ContinueOnError="{x:Null}" DisplayName="Invoke workflow file" sap2010:WorkflowViewState.IdRef="InvokeWorkflowFile_1" UnSafe="False" WorkflowFileName="Lib\backlog_get_issue.xaml">
+        <ui:InvokeWorkflowFile.Arguments>
+          <InArgument x:TypeArguments="x:String" x:Key="in_Space_Name">[in_Config("BacklogSpaceName").ToString]</InArgument>
+          <InArgument x:TypeArguments="x:String" x:Key="in_API_Key">[in_Config("BacklogAPIKey").ToString]</InArgument>
+          <InArgument x:TypeArguments="x:String" x:Key="in_IssueId_Or_Key">[in_TransactionItem("id").ToString]</InArgument>
+          <OutArgument x:TypeArguments="njl:JObject" x:Key="out_Issue">[Issue]</OutArgument>
+        </ui:InvokeWorkflowFile.Arguments>
+      </ui:InvokeWorkflowFile>
+    </Sequence>
+    <Sequence sap2010:Annotation.AnnotationText="課題を処理します。&#xD;&#xA;課題の情報は、変数IssueにJsonオブジェクトとして格納されています。取得できる情報の内容は、下記を参照のこと。&#xD;&#xA;&#xD;&#xA;https://developer.nulab-inc.com/ja/docs/backlog/api/2/get-issue/&#xD;&#xA;&#xD;&#xA;&#xD;&#xA;" DisplayName="課題の処理" sap2010:WorkflowViewState.IdRef="Sequence_5">
+      <WriteLine DisplayName="Write line" sap2010:WorkflowViewState.IdRef="WriteLine_2" Text="[Issue.ToString]" />
+    </Sequence>
+    <Sequence sap2010:Annotation.AnnotationText="課題情報を更新します。&#xD;&#xA;&#xD;&#xA;・課題の対応が完了した場合&#xD;&#xA;AssigneeId: 課題の次の担当者のID&#xD;&#xA;StatusId: 状態のID（４）&#xD;&#xA;ResolutionId: 完了理由のID（０）&#xD;&#xA;Comment: コメント&#xD;&#xA;&#xD;&#xA;・BPE(Business Process Exception)の場合：" DisplayName="課題情報の更新" sap2010:WorkflowViewState.IdRef="Sequence_3">
+      <Assign sap2010:WorkflowViewState.IdRef="Assign_1">
+        <Assign.To>
+          <OutArgument x:TypeArguments="x:String">[AssigneeId]</OutArgument>
+        </Assign.To>
+        <Assign.Value>
+          <InArgument x:TypeArguments="x:String">[Issue("assignee")("id").ToString]</InArgument>
+        </Assign.Value>
+      </Assign>
+      <Assign sap2010:WorkflowViewState.IdRef="Assign_4">
+        <Assign.To>
+          <OutArgument x:TypeArguments="x:String">[StatusId]</OutArgument>
+        </Assign.To>
+        <Assign.Value>
+          <InArgument x:TypeArguments="x:String">4</InArgument>
+        </Assign.Value>
+      </Assign>
+      <Assign sap2010:WorkflowViewState.IdRef="Assign_2">
+        <Assign.To>
+          <OutArgument x:TypeArguments="x:String">[ResolutionId]</OutArgument>
+        </Assign.To>
+        <Assign.Value>
+          <InArgument x:TypeArguments="x:String">0</InArgument>
+        </Assign.Value>
+      </Assign>
+      <Assign sap2010:WorkflowViewState.IdRef="Assign_3">
+        <Assign.To>
+          <OutArgument x:TypeArguments="x:String">[Comment]</OutArgument>
+        </Assign.To>
+        <Assign.Value>
+          <InArgument x:TypeArguments="x:String">作業完了しました</InArgument>
+        </Assign.Value>
+      </Assign>
+      <ui:InvokeWorkflowFile ContinueOnError="{x:Null}" DisplayName="Invoke workflow file" sap2010:WorkflowViewState.IdRef="InvokeWorkflowFile_2" UnSafe="False" WorkflowFileName="Lib\backlog_update_issue.xaml">
+        <ui:InvokeWorkflowFile.Arguments>
+          <InArgument x:TypeArguments="x:String" x:Key="in_Space_Name">[in_Config("BacklogSpaceName").ToString]</InArgument>
+          <InArgument x:TypeArguments="x:String" x:Key="in_API_Key">[in_Config("BacklogAPIKey").ToString]</InArgument>
+          <InArgument x:TypeArguments="x:String" x:Key="in_IssueId_Or_Key">[in_TransactionItem("id").ToString]</InArgument>
+          <InArgument x:TypeArguments="x:String" x:Key="in_Summary" />
+          <InArgument x:TypeArguments="x:String" x:Key="in_ParentIssueId" />
+          <InArgument x:TypeArguments="x:String" x:Key="in_Description" />
+          <InArgument x:TypeArguments="x:String" x:Key="in_StatusId">[StatusId]</InArgument>
+          <InArgument x:TypeArguments="x:String" x:Key="in_ResolutionId">[ResolutionId]</InArgument>
+          <InArgument x:TypeArguments="x:String" x:Key="in_StartDate" />
+          <InArgument x:TypeArguments="x:String" x:Key="in_DueDate" />
+          <InArgument x:TypeArguments="x:String" x:Key="in_EstimatedHours" />
+          <InArgument x:TypeArguments="x:String" x:Key="in_ActualHours" />
+          <InArgument x:TypeArguments="x:String" x:Key="in_IssueTypeId" />
+          <InArgument x:TypeArguments="x:String" x:Key="in_CategoryId" />
+          <InArgument x:TypeArguments="x:String" x:Key="in_VersionId" />
+          <InArgument x:TypeArguments="x:String" x:Key="in_MilestoneId" />
+          <InArgument x:TypeArguments="x:String" x:Key="in_PriorityId" />
+          <InArgument x:TypeArguments="x:String" x:Key="in_AssigneeId">[AssigneeId]</InArgument>
+          <InArgument x:TypeArguments="x:String" x:Key="in_NotifiedUserId" />
+          <InArgument x:TypeArguments="x:String" x:Key="in_AttachmentId" />
+          <InArgument x:TypeArguments="x:String" x:Key="in_Comment">[Comment]</InArgument>
+          <InArgument x:TypeArguments="njl:JObject" x:Key="out_Issue" />
+        </ui:InvokeWorkflowFile.Arguments>
+      </ui:InvokeWorkflowFile>
+    </Sequence>
+    <sads:DebugSymbol.Symbol>d1ZDOlxVc2Vyc1xtaXlhaWNoaS55b3NoaWhpa29cRG9jdW1lbnRzXFVpUGF0aFxSZUZyYW1ld29yayBCYWNrbG9nIFRlbXBsYXRlXFByb2Nlc3MueGFtbCFMA54BDgIBAVQFXRACASVeBWAQAgEiYQWcARACAQJVB1wfAgEmXwdfcwIBI2IHaRACAR5qB3EQAgEacgd5EAIBFnoHgQEQAgESggEHmwEfAgEDV0hXcAIBLVpIWk8CAStYRVhqAgEpWUxZbwIBKFWzAVXPAQIBJ19eX3ACASRnMmdUAgEhZDNkPwIBH28ybzMCAR1sM2w9AgEbdzJ3MwIBGXQzdEECARd/Mn86AgEVfDN8PAIBE4QBSIQBcAIBEIUBRYUBagIBDpUBSJUBVAIBDJgBRZgBTgIBCoYBTIYBbwIBCYoBRooBUAIBB4sBSosBWAIBBYIBswGCAdIBAgEE</sads:DebugSymbol.Symbol>
+  </Sequence>
+  <sap2010:WorkflowViewState.ViewStateManager>
+    <sap2010:ViewStateManager>
+      <sap2010:ViewStateData Id="InvokeWorkflowFile_1" sap:VirtualizedContainerService.HintSize="314,87" />
+      <sap2010:ViewStateData Id="Sequence_2" sap:VirtualizedContainerService.HintSize="336,211">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="WriteLine_2" sap:VirtualizedContainerService.HintSize="210,61" />
+      <sap2010:ViewStateData Id="Sequence_5" sap:VirtualizedContainerService.HintSize="336,347">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+            <x:Boolean x:Key="IsPinned">False</x:Boolean>
+            <x:Boolean x:Key="IsAnnotationDocked">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="Assign_1" sap:VirtualizedContainerService.HintSize="314,60" />
+      <sap2010:ViewStateData Id="Assign_4" sap:VirtualizedContainerService.HintSize="314,60" />
+      <sap2010:ViewStateData Id="Assign_2" sap:VirtualizedContainerService.HintSize="314,60" />
+      <sap2010:ViewStateData Id="Assign_3" sap:VirtualizedContainerService.HintSize="314,60" />
+      <sap2010:ViewStateData Id="InvokeWorkflowFile_2" sap:VirtualizedContainerService.HintSize="314,87" />
+      <sap2010:ViewStateData Id="Sequence_3" sap:VirtualizedContainerService.HintSize="336,758">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+            <x:Boolean x:Key="IsPinned">False</x:Boolean>
+            <x:Boolean x:Key="IsAnnotationDocked">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="Sequence_1" sap:VirtualizedContainerService.HintSize="358,1592">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+            <x:Boolean x:Key="IsAnnotationDocked">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="ProcessTransaction_1" sap:VirtualizedContainerService.HintSize="398,2152" />
+    </sap2010:ViewStateManager>
+  </sap2010:WorkflowViewState.ViewStateManager>
+</Activity>
