@@ -80,13 +80,13 @@
   <Sequence sap2010:Annotation.AnnotationText="Description: Get data from spreadsheets, databases, email, web API or UiPath server queues. If no new data, set out_TransactionItem to Nothing. &#xA;&#xA;For a linear process (not repetitive), set out_TransactionItem only for in_TransactionNumber 1 - first and only transaction. &#xA;&#xA;If the process is repeatable, set io_TransactionData once for in_TransactionNumber 1, then assign a new out_TransactionItem by using the in_TransactionNumber to index io_TransactionData. Be aware that, at the end of the io_TransactionData collection, it is your responsibility to set out_TransactionItem to Nothing, thus ending the process." DisplayName="GetTransactionData" sap2010:WorkflowViewState.IdRef="Sequence_1">
     <If Condition="[in_TransactionNumber = 1]" DisplayName="If first Transaction, Read all the data" sap2010:WorkflowViewState.IdRef="If_2">
       <If.Then>
-        <ui:InvokeWorkflowFile ContinueOnError="{x:Null}" DisplayName="Invoke workflow file" sap2010:WorkflowViewState.IdRef="InvokeWorkflowFile_1" UnSafe="False" WorkflowFileName="Lib\backlog_issues.xaml">
+        <ui:InvokeWorkflowFile ContinueOnError="{x:Null}" DisplayName="Invoke workflow file" sap2010:WorkflowViewState.IdRef="InvokeWorkflowFile_1" UnSafe="False" WorkflowFileName="Lib\backlog_get_issue_list.xaml">
           <ui:InvokeWorkflowFile.Arguments>
-            <OutArgument x:TypeArguments="sd:DataTable" x:Key="out_Issues">[io_TransactionData]</OutArgument>
             <InArgument x:TypeArguments="x:String" x:Key="in_Space_Name">[in_Config("BacklogSpaceName").ToString]</InArgument>
             <InArgument x:TypeArguments="x:String" x:Key="in_API_Key">[in_Config("BacklogAPIKey").ToString]</InArgument>
             <InArgument x:TypeArguments="x:String" x:Key="in_Project_IDs">[in_Config("BacklogProjectIDs").ToString]</InArgument>
             <InArgument x:TypeArguments="x:String" x:Key="in_Assignee_IDs">[in_Config("BacklogAssigneeIDs").ToString]</InArgument>
+            <OutArgument x:TypeArguments="sd:DataTable" x:Key="out_Issues">[io_TransactionData]</OutArgument>
           </ui:InvokeWorkflowFile.Arguments>
         </ui:InvokeWorkflowFile>
       </If.Then>
@@ -121,7 +121,7 @@
               <OutArgument x:TypeArguments="x:String">[out_TransactionID]</OutArgument>
             </Assign.To>
             <Assign.Value>
-              <InArgument x:TypeArguments="x:String">[out_TransactionItem("id").ToString]</InArgument>
+              <InArgument x:TypeArguments="x:String">[out_TransactionItem("issueKey").ToString]</InArgument>
             </Assign.Value>
           </Assign>
           <Assign DisplayName="Assign TransactionField1" sap2010:WorkflowViewState.IdRef="Assign_2">
@@ -143,7 +143,7 @@
         </Sequence>
       </If.Then>
     </If>
-    <sads:DebugSymbol.Symbol>d2tDOlxVc2Vyc1xtaXlhaWNoaS55b3NoaWhpa29cRG9jdW1lbnRzXFVpUGF0aFxSZUZyYW1ld29yayBCYWNrbG9nIFRlbXBsYXRlXEZyYW1ld29ya1xHZXRUcmFuc2FjdGlvbkRhdGEueGFtbB5QA5MBDgIBAVEFXQoCARteBXMKAgERdAWRAQoCAQJRE1EvAgEcUwlbIQIBHl4TXk8CARJgCWcSAgEXaglxEgIBE3QTdDgCAQN2CY8BFAIBBFZKVnICAShXR1dsAgEmWEtYdAIBJFO1AVPOAQIBI1lMWXYCASFVTFVgAgEfZTZlaQIBGmI3YkwCARhvNm8/AgEWbDdsTAIBFHcLfhQCAQ1/C4YBFAIBCYcBC44BFAIBBXw2fFoCARB5N3lKAgEOhAE2hAFhAgEMgQE3gQFOAgEKjAE2jAFfAgEIiQE3iQFOAgEG</sads:DebugSymbol.Symbol>
+    <sads:DebugSymbol.Symbol>d3dDOlxVc2Vyc1xtaXlhaWNoaS55b3NoaWhpa29cRG9jdW1lbnRzXFVpUGF0aFxSZUZyYW1ld29yay1UZW1wbGF0ZS1CYWNrbG9nLVRyYW5zYWN0aW9uXEZyYW1ld29ya1xHZXRUcmFuc2FjdGlvbkRhdGEueGFtbB5QA5MBDgIBAVEFXQoCARteBXMKAgERdAWRAQoCAQJRE1EvAgEcUwlbIQIBHl4TXk8CARJgCWcSAgEXaglxEgIBE3QTdDgCAQN2CY8BFAIBBFVKVXICAShWR1ZsAgEmV0tXdAIBJFO1AVPWAQIBI1hMWHYCASFZTFlgAgEfZTZlaQIBGmI3YkwCARhvNm8/AgEWbDdsTAIBFHcLfhQCAQ1/C4YBFAIBCYcBC44BFAIBBXw2fGACARB5N3lKAgEOhAE2hAFhAgEMgQE3gQFOAgEKjAE2jAFfAgEIiQE3iQFOAgEG</sads:DebugSymbol.Symbol>
   </Sequence>
   <sap2010:WorkflowViewState.ViewStateManager>
     <sap2010:ViewStateManager>
@@ -186,7 +186,7 @@
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="GetTransactionData_1" sap:VirtualizedContainerService.HintSize="571,1503" />
+      <sap2010:ViewStateData Id="GetTransactionData_1" sap:VirtualizedContainerService.HintSize="571,1463" />
     </sap2010:ViewStateManager>
   </sap2010:WorkflowViewState.ViewStateManager>
 </Activity>

@@ -1,4 +1,4 @@
-﻿<Activity mc:Ignorable="sap sap2010 sads" x:Class="backlog_issue_id_or_key"
+﻿<Activity mc:Ignorable="sap sap2010 sads" x:Class="backlog_get_last_comment" this:backlog_get_last_comment.out_Last_Comment="[Nothing]"
  xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities"
  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
  xmlns:mva="clr-namespace:Microsoft.VisualBasic.Activities;assembly=System.Activities"
@@ -8,18 +8,19 @@
  xmlns:sap2010="http://schemas.microsoft.com/netfx/2010/xaml/activities/presentation"
  xmlns:scg="clr-namespace:System.Collections.Generic;assembly=mscorlib"
  xmlns:sco="clr-namespace:System.Collections.ObjectModel;assembly=mscorlib"
+ xmlns:this="clr-namespace:"
  xmlns:ui="http://schemas.uipath.com/workflow/activities"
  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
   <x:Members>
     <x:Property Name="in_Space_Name" Type="InArgument(x:String)" />
     <x:Property Name="in_API_Key" Type="InArgument(x:String)" />
     <x:Property Name="in_IssueId_Or_Key" Type="InArgument(x:String)" />
-    <x:Property Name="out_Issue" Type="OutArgument(njl:JObject)" />
+    <x:Property Name="out_Last_Comment" Type="InArgument(njl:JObject)" />
   </x:Members>
   <mva:VisualBasic.Settings>
     <x:Null />
   </mva:VisualBasic.Settings>
-  <sap2010:WorkflowViewState.IdRef>backlog_issue_id_or_key_1</sap2010:WorkflowViewState.IdRef>
+  <sap2010:WorkflowViewState.IdRef>backlog_get_last_comment_1</sap2010:WorkflowViewState.IdRef>
   <TextExpression.NamespacesForImplementation>
     <sco:Collection x:TypeArguments="x:String">
       <x:String>System.Activities</x:String>
@@ -64,20 +65,21 @@
       <AssemblyReference>WindowsBase</AssemblyReference>
       <AssemblyReference>PresentationCore</AssemblyReference>
       <AssemblyReference>System.Xaml</AssemblyReference>
+      <AssemblyReference>Newtonsoft.Json</AssemblyReference>
       <AssemblyReference>System.ComponentModel.Composition</AssemblyReference>
       <AssemblyReference>System.ServiceModel</AssemblyReference>
       <AssemblyReference>UiPath.IntelligentOCR</AssemblyReference>
       <AssemblyReference>UiPath.Python</AssemblyReference>
       <AssemblyReference>System.Runtime.WindowsRuntime</AssemblyReference>
-      <AssemblyReference>Newtonsoft.Json</AssemblyReference>
     </sco:Collection>
   </TextExpression.ReferencesForImplementation>
-  <Sequence sap2010:Annotation.AnnotationText="課題情報の取得&#xA;/api/v2/issues/:issueIdOrKey " DisplayName="backlog_get_issue" sap2010:WorkflowViewState.IdRef="Sequence_1">
+  <Sequence sap2010:Annotation.AnnotationText="課題の最終コメントの取得&#xD;&#xA;&#xD;&#xA;/api/v2/issues/:issueIdOrKey/comments " DisplayName="backlog_get_last_comment" sap2010:WorkflowViewState.IdRef="Sequence_1">
     <Sequence.Variables>
       <Variable x:TypeArguments="x:String" Name="Result" />
       <Variable x:TypeArguments="x:Int32" Name="StatusCode" />
+      <Variable x:TypeArguments="njl:JArray" Name="JArray" />
     </Sequence.Variables>
-    <ui:HttpClient Body="{x:Null}" ConsumerKey="{x:Null}" ConsumerSecret="{x:Null}" ContinueOnError="{x:Null}" OAuth1Token="{x:Null}" OAuth1TokenSecret="{x:Null}" OAuth2Token="{x:Null}" Password="{x:Null}" ResourcePath="{x:Null}" Username="{x:Null}" AcceptFormat="ANY" BodyFormat="application/xml" DisplayName="HTTP Request" EndPoint="[&quot;https://&quot; + in_Space_Name + &quot;.backlog.jp/api/v2/issues/&quot; + in_IssueId_Or_Key + &quot;?apiKey=&quot; + in_API_Key]" sap2010:WorkflowViewState.IdRef="HttpClient_1" Method="GET" Result="[Result]" StatusCode="[StatusCode]" TimeoutMS="6000">
+    <ui:HttpClient Body="{x:Null}" ConsumerKey="{x:Null}" ConsumerSecret="{x:Null}" ContinueOnError="{x:Null}" OAuth1Token="{x:Null}" OAuth1TokenSecret="{x:Null}" OAuth2Token="{x:Null}" Password="{x:Null}" ResourcePath="{x:Null}" Username="{x:Null}" AcceptFormat="ANY" BodyFormat="application/xml" DisplayName="HTTP Request" EndPoint="[&quot;https://&quot; + in_Space_Name + &quot;.backlog.jp/api/v2/issues/&quot; + in_IssueId_Or_Key + &quot;/comments&quot; + &quot;?apiKey=&quot; + in_API_Key]" sap2010:WorkflowViewState.IdRef="HttpClient_1" Method="GET" Result="[Result]" StatusCode="[StatusCode]" TimeoutMS="6000">
       <ui:HttpClient.Attachments>
         <scg:Dictionary x:TypeArguments="x:String, InArgument(x:String)" />
       </ui:HttpClient.Attachments>
@@ -85,7 +87,8 @@
         <scg:Dictionary x:TypeArguments="x:String, InArgument(x:String)" />
       </ui:HttpClient.Headers>
       <ui:HttpClient.Parameters>
-        <scg:Dictionary x:TypeArguments="x:String, InArgument(x:String)" />
+        <InArgument x:TypeArguments="x:String" x:Key="count">1</InArgument>
+        <InArgument x:TypeArguments="x:String" x:Key="order">desc</InArgument>
       </ui:HttpClient.Parameters>
       <ui:HttpClient.UrlSegments>
         <scg:Dictionary x:TypeArguments="x:String, InArgument(x:String)" />
@@ -93,25 +96,36 @@
     </ui:HttpClient>
     <If Condition="[statusCode = 200]" DisplayName="StatusCode check" sap2010:WorkflowViewState.IdRef="If_1">
       <If.Else>
-        <Sequence sap2010:WorkflowViewState.IdRef="Sequence_2">
-          <Throw Exception="[new Exception( &quot;Backlog API Failed. Method: :issueIdOrKey. Status:  &quot; + StatusCode.ToString + &quot; Message: &quot; + Result)]" sap2010:WorkflowViewState.IdRef="Throw_1" />
-        </Sequence>
+        <Throw Exception="[new Exception( &quot;Backlog API Failed. Method: issues. Status:  &quot; + StatusCode.ToString + &quot; Message: &quot; + Result)]" sap2010:WorkflowViewState.IdRef="Throw_1" />
       </If.Else>
     </If>
-    <ui:DeserializeJson x:TypeArguments="njl:JObject" DisplayName="Deserialize json" sap2010:WorkflowViewState.IdRef="DeserializeJson`1_1" JsonObject="[out_Issue]" JsonString="[Result]" />
-    <sads:DebugSymbol.Symbol>d3BDOlxVc2Vyc1xtaXlhaWNoaS55b3NoaWhpa29cRG9jdW1lbnRzXFVpUGF0aFxSZUZyYW1ld29yay1UZW1wbGF0ZS1CYWNrbG9nLVRyYW5zYWN0aW9uXExpYlxiYWNrbG9nX2dldF9pc3N1ZS54YW1sDksDZw4CAQFQBV0VAgENXgVkCgIBB2UFZb0BAgECUMsEUNEEAgEWUJwEUKYEAgEUUM8CUNgDAgEQULIEUMAEAgEOXhNeJwIBCGAJYhQCAQplsAFlugECAQVllwFlpAECAQNhC2HVAQIBC2EcYagBAgEM</sads:DebugSymbol.Symbol>
+    <ui:DeserializeJsonArray DisplayName="Deserialize json array" sap2010:WorkflowViewState.IdRef="DeserializeJsonArray_1" JsonArray="[JArray]" JsonString="[Result]" />
+    <ui:ForEach x:TypeArguments="njl:JObject" sap2010:Annotation.AnnotationText="最後のコメントだけを取得" DisplayName="For each" sap2010:WorkflowViewState.IdRef="ForEach`1_1" Values="[JArray]">
+      <ui:ForEach.Body>
+        <ActivityAction x:TypeArguments="njl:JObject">
+          <ActivityAction.Argument>
+            <DelegateInArgument x:TypeArguments="njl:JObject" Name="item" />
+          </ActivityAction.Argument>
+          <Sequence DisplayName="Body" sap2010:WorkflowViewState.IdRef="Sequence_2">
+            <Assign sap2010:WorkflowViewState.IdRef="Assign_1">
+              <Assign.To>
+                <OutArgument x:TypeArguments="njl:JObject">[out_Last_Comment]</OutArgument>
+              </Assign.To>
+              <Assign.Value>
+                <InArgument x:TypeArguments="njl:JObject">[item]</InArgument>
+              </Assign.Value>
+            </Assign>
+            <ui:Break sap2010:WorkflowViewState.IdRef="Break_1" />
+          </Sequence>
+        </ActivityAction>
+      </ui:ForEach.Body>
+    </ui:ForEach>
+    <sads:DebugSymbol.Symbol>d3dDOlxVc2Vyc1xtaXlhaWNoaS55b3NoaWhpa29cRG9jdW1lbnRzXFVpUGF0aFxSZUZyYW1ld29yay1UZW1wbGF0ZS1CYWNrbG9nLVRyYW5zYWN0aW9uXExpYlxiYWNrbG9nX2dldF9sYXN0X2NvbW1lbnQueGFtbBcBfQGHAQECTAN8DgIBAVIFYBUCARVhBWUKAgEQZgVmqQECAQtnBXoSAgECUuMEUukEAgEgWz5bQgIBH1o+Wj8CAR5StARSvgQCARxSzwJS8AMCARhSygRS2AQCARZhE2EnAgERYwljzAECARNmhgFmkAECAQ5mnAFmpgECAQxnrAFntgECAQptC3cWAgEDYxpjnwECARRuDXUWAgEFdg12QwIBBHM7c0ECAQhwPHBOAgEG</sads:DebugSymbol.Symbol>
   </Sequence>
   <sap2010:WorkflowViewState.ViewStateManager>
     <sap2010:ViewStateManager>
       <sap2010:ViewStateData Id="HttpClient_1" sap:VirtualizedContainerService.HintSize="314,22" />
       <sap2010:ViewStateData Id="Throw_1" sap:VirtualizedContainerService.HintSize="200,22" />
-      <sap2010:ViewStateData Id="Sequence_2" sap:VirtualizedContainerService.HintSize="222,146">
-        <sap:WorkflowViewStateService.ViewState>
-          <scg:Dictionary x:TypeArguments="x:String, x:Object">
-            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
-          </scg:Dictionary>
-        </sap:WorkflowViewStateService.ViewState>
-      </sap2010:ViewStateData>
       <sap2010:ViewStateData Id="If_1" sap:VirtualizedContainerService.HintSize="314,51">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
@@ -120,8 +134,26 @@
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="DeserializeJson`1_1" sap:VirtualizedContainerService.HintSize="314,60" />
-      <sap2010:ViewStateData Id="Sequence_1" sap:VirtualizedContainerService.HintSize="336,379">
+      <sap2010:ViewStateData Id="DeserializeJsonArray_1" sap:VirtualizedContainerService.HintSize="314,60" />
+      <sap2010:ViewStateData Id="Assign_1" sap:VirtualizedContainerService.HintSize="242,60" />
+      <sap2010:ViewStateData Id="Break_1" sap:VirtualizedContainerService.HintSize="242,22" />
+      <sap2010:ViewStateData Id="Sequence_2" sap:VirtualizedContainerService.HintSize="264,246">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="ForEach`1_1" sap:VirtualizedContainerService.HintSize="314,78">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">False</x:Boolean>
+            <x:Boolean x:Key="IsPinned">False</x:Boolean>
+            <x:Boolean x:Key="IsAnnotationDocked">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="Sequence_1" sap:VirtualizedContainerService.HintSize="336,512">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
@@ -129,7 +161,7 @@
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="backlog_issue_id_or_key_1" sap:VirtualizedContainerService.HintSize="376,659" />
+      <sap2010:ViewStateData Id="backlog_get_last_comment_1" sap:VirtualizedContainerService.HintSize="376,1316" />
     </sap2010:ViewStateManager>
   </sap2010:WorkflowViewState.ViewStateManager>
 </Activity>

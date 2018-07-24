@@ -80,86 +80,153 @@
       <Variable x:TypeArguments="x:String" Name="StatusId" />
       <Variable x:TypeArguments="x:String" Name="Comment" />
       <Variable x:TypeArguments="x:String" Name="ResolutionId" />
+      <Variable x:TypeArguments="njl:JObject" Name="LastComment" />
     </Sequence.Variables>
     <Sequence DisplayName="課題情報の取得" sap2010:WorkflowViewState.IdRef="Sequence_2">
-      <ui:InvokeWorkflowFile ContinueOnError="{x:Null}" DisplayName="Invoke workflow file" sap2010:WorkflowViewState.IdRef="InvokeWorkflowFile_1" UnSafe="False" WorkflowFileName="Lib\backlog_get_issue.xaml">
+      <ui:InvokeWorkflowFile ContinueOnError="{x:Null}" DisplayName="課題情報を取得" sap2010:WorkflowViewState.IdRef="InvokeWorkflowFile_1" UnSafe="False" WorkflowFileName="Lib\backlog_get_issue.xaml">
         <ui:InvokeWorkflowFile.Arguments>
           <InArgument x:TypeArguments="x:String" x:Key="in_Space_Name">[in_Config("BacklogSpaceName").ToString]</InArgument>
           <InArgument x:TypeArguments="x:String" x:Key="in_API_Key">[in_Config("BacklogAPIKey").ToString]</InArgument>
-          <InArgument x:TypeArguments="x:String" x:Key="in_IssueId_Or_Key">[in_TransactionItem("id").ToString]</InArgument>
+          <InArgument x:TypeArguments="x:String" x:Key="in_IssueId_Or_Key">[in_TransactionItem("issueKey").ToString]</InArgument>
           <OutArgument x:TypeArguments="njl:JObject" x:Key="out_Issue">[Issue]</OutArgument>
         </ui:InvokeWorkflowFile.Arguments>
       </ui:InvokeWorkflowFile>
-    </Sequence>
-    <Sequence sap2010:Annotation.AnnotationText="課題を処理します。&#xD;&#xA;課題の情報は、変数IssueにJsonオブジェクトとして格納されています。取得できる情報の内容は、下記を参照のこと。&#xD;&#xA;&#xD;&#xA;https://developer.nulab-inc.com/ja/docs/backlog/api/2/get-issue/&#xD;&#xA;&#xD;&#xA;&#xD;&#xA;" DisplayName="課題の処理" sap2010:WorkflowViewState.IdRef="Sequence_5">
-      <WriteLine DisplayName="Write line" sap2010:WorkflowViewState.IdRef="WriteLine_2" Text="[Issue.ToString]" />
-    </Sequence>
-    <Sequence sap2010:Annotation.AnnotationText="課題情報を更新します。&#xD;&#xA;&#xD;&#xA;・課題の対応が完了した場合&#xD;&#xA;AssigneeId: 課題の次の担当者のID&#xD;&#xA;StatusId: 状態のID（４）&#xD;&#xA;ResolutionId: 完了理由のID（０）&#xD;&#xA;Comment: コメント&#xD;&#xA;&#xD;&#xA;・BPE(Business Process Exception)の場合：" DisplayName="課題情報の更新" sap2010:WorkflowViewState.IdRef="Sequence_3">
-      <Assign sap2010:WorkflowViewState.IdRef="Assign_1">
-        <Assign.To>
-          <OutArgument x:TypeArguments="x:String">[AssigneeId]</OutArgument>
-        </Assign.To>
-        <Assign.Value>
-          <InArgument x:TypeArguments="x:String">[Issue("assignee")("id").ToString]</InArgument>
-        </Assign.Value>
-      </Assign>
-      <Assign sap2010:WorkflowViewState.IdRef="Assign_4">
-        <Assign.To>
-          <OutArgument x:TypeArguments="x:String">[StatusId]</OutArgument>
-        </Assign.To>
-        <Assign.Value>
-          <InArgument x:TypeArguments="x:String">4</InArgument>
-        </Assign.Value>
-      </Assign>
-      <Assign sap2010:WorkflowViewState.IdRef="Assign_2">
-        <Assign.To>
-          <OutArgument x:TypeArguments="x:String">[ResolutionId]</OutArgument>
-        </Assign.To>
-        <Assign.Value>
-          <InArgument x:TypeArguments="x:String">0</InArgument>
-        </Assign.Value>
-      </Assign>
-      <Assign sap2010:WorkflowViewState.IdRef="Assign_3">
-        <Assign.To>
-          <OutArgument x:TypeArguments="x:String">[Comment]</OutArgument>
-        </Assign.To>
-        <Assign.Value>
-          <InArgument x:TypeArguments="x:String">作業完了しました</InArgument>
-        </Assign.Value>
-      </Assign>
-      <ui:InvokeWorkflowFile ContinueOnError="{x:Null}" DisplayName="Invoke workflow file" sap2010:WorkflowViewState.IdRef="InvokeWorkflowFile_2" UnSafe="False" WorkflowFileName="Lib\backlog_update_issue.xaml">
+      <ui:InvokeWorkflowFile ContinueOnError="{x:Null}" DisplayName="最後のコメントを取得" sap2010:WorkflowViewState.IdRef="InvokeWorkflowFile_3" UnSafe="False" WorkflowFileName="Lib\backlog_get_last_comment.xaml">
         <ui:InvokeWorkflowFile.Arguments>
           <InArgument x:TypeArguments="x:String" x:Key="in_Space_Name">[in_Config("BacklogSpaceName").ToString]</InArgument>
           <InArgument x:TypeArguments="x:String" x:Key="in_API_Key">[in_Config("BacklogAPIKey").ToString]</InArgument>
-          <InArgument x:TypeArguments="x:String" x:Key="in_IssueId_Or_Key">[in_TransactionItem("id").ToString]</InArgument>
-          <InArgument x:TypeArguments="x:String" x:Key="in_Summary" />
-          <InArgument x:TypeArguments="x:String" x:Key="in_ParentIssueId" />
-          <InArgument x:TypeArguments="x:String" x:Key="in_Description" />
-          <InArgument x:TypeArguments="x:String" x:Key="in_StatusId">[StatusId]</InArgument>
-          <InArgument x:TypeArguments="x:String" x:Key="in_ResolutionId">[ResolutionId]</InArgument>
-          <InArgument x:TypeArguments="x:String" x:Key="in_StartDate" />
-          <InArgument x:TypeArguments="x:String" x:Key="in_DueDate" />
-          <InArgument x:TypeArguments="x:String" x:Key="in_EstimatedHours" />
-          <InArgument x:TypeArguments="x:String" x:Key="in_ActualHours" />
-          <InArgument x:TypeArguments="x:String" x:Key="in_IssueTypeId" />
-          <InArgument x:TypeArguments="x:String" x:Key="in_CategoryId" />
-          <InArgument x:TypeArguments="x:String" x:Key="in_VersionId" />
-          <InArgument x:TypeArguments="x:String" x:Key="in_MilestoneId" />
-          <InArgument x:TypeArguments="x:String" x:Key="in_PriorityId" />
-          <InArgument x:TypeArguments="x:String" x:Key="in_AssigneeId">[AssigneeId]</InArgument>
-          <InArgument x:TypeArguments="x:String" x:Key="in_NotifiedUserId" />
-          <InArgument x:TypeArguments="x:String" x:Key="in_AttachmentId" />
-          <InArgument x:TypeArguments="x:String" x:Key="in_Comment">[Comment]</InArgument>
-          <InArgument x:TypeArguments="njl:JObject" x:Key="out_Issue" />
+          <InArgument x:TypeArguments="x:String" x:Key="in_IssueId_Or_Key">[in_TransactionItem("issueKey").ToString]</InArgument>
+          <InArgument x:TypeArguments="njl:JObject" x:Key="out_Last_Comment" />
         </ui:InvokeWorkflowFile.Arguments>
       </ui:InvokeWorkflowFile>
     </Sequence>
-    <sads:DebugSymbol.Symbol>d1ZDOlxVc2Vyc1xtaXlhaWNoaS55b3NoaWhpa29cRG9jdW1lbnRzXFVpUGF0aFxSZUZyYW1ld29yayBCYWNrbG9nIFRlbXBsYXRlXFByb2Nlc3MueGFtbCFMA54BDgIBAVQFXRACASVeBWAQAgEiYQWcARACAQJVB1wfAgEmXwdfcwIBI2IHaRACAR5qB3EQAgEacgd5EAIBFnoHgQEQAgESggEHmwEfAgEDV0hXcAIBLVpIWk8CAStYRVhqAgEpWUxZbwIBKFWzAVXPAQIBJ19eX3ACASRnMmdUAgEhZDNkPwIBH28ybzMCAR1sM2w9AgEbdzJ3MwIBGXQzdEECARd/Mn86AgEVfDN8PAIBE4QBSIQBcAIBEIUBRYUBagIBDpUBSJUBVAIBDJgBRZgBTgIBCoYBTIYBbwIBCYoBRooBUAIBB4sBSosBWAIBBYIBswGCAdIBAgEE</sads:DebugSymbol.Symbol>
+    <Sequence sap2010:Annotation.AnnotationText="課題を処理します。&#xA;課題の情報は変数Issueに、最終コメントはLastCommentにJsonオブジェクトとして格納されています。取得できる情報の内容は、下記を参照のこと。&#xA;&#xA;https://developer.nulab-inc.com/ja/docs/backlog/api/2/get-issue/&#xA;&#xA;&#xA;" DisplayName="課題の処理" sap2010:WorkflowViewState.IdRef="Sequence_5">
+      <WriteLine DisplayName="Write line" sap2010:WorkflowViewState.IdRef="WriteLine_2" Text="[Issue(&quot;issueKey&quot;).ToString]" />
+      <WriteLine DisplayName="Write line" sap2010:WorkflowViewState.IdRef="WriteLine_3" Text="[Issue(&quot;description&quot;).ToString]" />
+      <WriteLine DisplayName="Write line" sap2010:WorkflowViewState.IdRef="WriteLine_4" Text="[LastComment(&quot;content&quot;).ToString]" />
+    </Sequence>
+    <Sequence sap2010:Annotation.AnnotationText="課題情報を更新します。&#xA;&#xA;・課題の対応が完了した場合&#xA;AssigneeId: 課題の次の担当者のID&#xA;StatusId: 完了のID（４）&#xA;ResolutionId: 完了理由のID（０）&#xA;Comment: コメント&#xA;&#xA;・BPE(Business Process Exception)の場合：&#xD;&#xA;AssigneeId: 課題を最後に更新したユーザーのID&#xD;&#xA;StatusId: 未対応のID（１）&#xD;&#xA;Comment: コメント" DisplayName="課題情報の更新" sap2010:WorkflowViewState.IdRef="Sequence_3">
+      <If Condition="[1 = 1]" sap2010:WorkflowViewState.IdRef="If_1">
+        <If.Then>
+          <Sequence sap2010:WorkflowViewState.IdRef="Sequence_7">
+            <Assign sap2010:WorkflowViewState.IdRef="Assign_1">
+              <Assign.To>
+                <OutArgument x:TypeArguments="x:String">[AssigneeId]</OutArgument>
+              </Assign.To>
+              <Assign.Value>
+                <InArgument x:TypeArguments="x:String">[Issue("assignee")("id").ToString]</InArgument>
+              </Assign.Value>
+            </Assign>
+            <Assign sap2010:WorkflowViewState.IdRef="Assign_4">
+              <Assign.To>
+                <OutArgument x:TypeArguments="x:String">[StatusId]</OutArgument>
+              </Assign.To>
+              <Assign.Value>
+                <InArgument x:TypeArguments="x:String">4</InArgument>
+              </Assign.Value>
+            </Assign>
+            <Assign sap2010:WorkflowViewState.IdRef="Assign_2">
+              <Assign.To>
+                <OutArgument x:TypeArguments="x:String">[ResolutionId]</OutArgument>
+              </Assign.To>
+              <Assign.Value>
+                <InArgument x:TypeArguments="x:String">0</InArgument>
+              </Assign.Value>
+            </Assign>
+            <Assign sap2010:WorkflowViewState.IdRef="Assign_3">
+              <Assign.To>
+                <OutArgument x:TypeArguments="x:String">[Comment]</OutArgument>
+              </Assign.To>
+              <Assign.Value>
+                <InArgument x:TypeArguments="x:String">作業完了しました</InArgument>
+              </Assign.Value>
+            </Assign>
+          </Sequence>
+        </If.Then>
+        <If.Else>
+          <Sequence sap2010:WorkflowViewState.IdRef="Sequence_8">
+            <Assign sap2010:WorkflowViewState.IdRef="Assign_5">
+              <Assign.To>
+                <OutArgument x:TypeArguments="x:String">[AssigneeId]</OutArgument>
+              </Assign.To>
+              <Assign.Value>
+                <InArgument x:TypeArguments="x:String">[Issue("updatedUser")("id").ToString]</InArgument>
+              </Assign.Value>
+            </Assign>
+            <Assign sap2010:WorkflowViewState.IdRef="Assign_6">
+              <Assign.To>
+                <OutArgument x:TypeArguments="x:String">[StatusId]</OutArgument>
+              </Assign.To>
+              <Assign.Value>
+                <InArgument x:TypeArguments="x:String">1</InArgument>
+              </Assign.Value>
+            </Assign>
+            <Assign sap2010:WorkflowViewState.IdRef="Assign_7">
+              <Assign.To>
+                <OutArgument x:TypeArguments="x:String">[ResolutionId]</OutArgument>
+              </Assign.To>
+              <Assign.Value>
+                <InArgument x:TypeArguments="x:String">0</InArgument>
+              </Assign.Value>
+            </Assign>
+            <Assign sap2010:WorkflowViewState.IdRef="Assign_8">
+              <Assign.To>
+                <OutArgument x:TypeArguments="x:String">[Comment]</OutArgument>
+              </Assign.To>
+              <Assign.Value>
+                <InArgument x:TypeArguments="x:String">差し戻します</InArgument>
+              </Assign.Value>
+            </Assign>
+          </Sequence>
+        </If.Else>
+      </If>
+      <ui:CommentOut DisplayName="Comment out" sap2010:WorkflowViewState.IdRef="CommentOut_1">
+        <ui:CommentOut.Body>
+          <Sequence DisplayName="Ignored Activities" sap2010:WorkflowViewState.IdRef="Sequence_6">
+            <ui:InvokeWorkflowFile ContinueOnError="{x:Null}" DisplayName="Invoke workflow file" sap2010:WorkflowViewState.IdRef="InvokeWorkflowFile_2" UnSafe="False" WorkflowFileName="Lib\backlog_update_issue.xaml">
+              <ui:InvokeWorkflowFile.Arguments>
+                <InArgument x:TypeArguments="x:String" x:Key="in_Space_Name">[in_Config("BacklogSpaceName").ToString]</InArgument>
+                <InArgument x:TypeArguments="x:String" x:Key="in_API_Key">[in_Config("BacklogAPIKey").ToString]</InArgument>
+                <InArgument x:TypeArguments="x:String" x:Key="in_IssueId_Or_Key">[in_TransactionItem("issueKey").ToString]</InArgument>
+                <InArgument x:TypeArguments="x:String" x:Key="in_Summary" />
+                <InArgument x:TypeArguments="x:String" x:Key="in_ParentIssueId" />
+                <InArgument x:TypeArguments="x:String" x:Key="in_Description" />
+                <InArgument x:TypeArguments="x:String" x:Key="in_StatusId">[StatusId]</InArgument>
+                <InArgument x:TypeArguments="x:String" x:Key="in_ResolutionId">[ResolutionId]</InArgument>
+                <InArgument x:TypeArguments="x:String" x:Key="in_StartDate" />
+                <InArgument x:TypeArguments="x:String" x:Key="in_DueDate" />
+                <InArgument x:TypeArguments="x:String" x:Key="in_EstimatedHours" />
+                <InArgument x:TypeArguments="x:String" x:Key="in_ActualHours" />
+                <InArgument x:TypeArguments="x:String" x:Key="in_IssueTypeId" />
+                <InArgument x:TypeArguments="x:String" x:Key="in_CategoryId" />
+                <InArgument x:TypeArguments="x:String" x:Key="in_VersionId" />
+                <InArgument x:TypeArguments="x:String" x:Key="in_MilestoneId" />
+                <InArgument x:TypeArguments="x:String" x:Key="in_PriorityId" />
+                <InArgument x:TypeArguments="x:String" x:Key="in_AssigneeId">[AssigneeId]</InArgument>
+                <InArgument x:TypeArguments="x:String" x:Key="in_NotifiedUserId" />
+                <InArgument x:TypeArguments="x:String" x:Key="in_AttachmentId" />
+                <InArgument x:TypeArguments="x:String" x:Key="in_Comment">[Comment]</InArgument>
+                <InArgument x:TypeArguments="njl:JObject" x:Key="out_Issue" />
+              </ui:InvokeWorkflowFile.Arguments>
+            </ui:InvokeWorkflowFile>
+          </Sequence>
+        </ui:CommentOut.Body>
+      </ui:CommentOut>
+    </Sequence>
+    <sads:DebugSymbol.Symbol>d2JDOlxVc2Vyc1xtaXlhaWNoaS55b3NoaWhpa29cRG9jdW1lbnRzXFVpUGF0aFxSZUZyYW1ld29yay1UZW1wbGF0ZS1CYWNrbG9nLVRyYW5zYWN0aW9uXFByb2Nlc3MueGFtbDJMA9kBDgIBAVUFZhACAS9nBWsQAgEobAXXARACAQJWB10fAgE3XgdlHwIBMGgHaIkBAgEtaQdpjAECAStqB2qOAQIBKW0HtgEMAgEEtwEH1gEXAgEDWEhYcAIBPltIW08CATxZRVlqAgE6WkxadQIBOVamAVbCAQIBOGBIYHACATVhRWFqAgEzYkxidQIBMl6pAV7MAQIBMWheaIYBAgEuaV5piQECASxqXmqLAQIBKm0VbR4CAQVvC5ABFgIBF5MBC7QBFgIBBnANdxYCASR4DX8WAgEggAENhwEWAgEciAENjwEWAgEYlAENmwEWAgETnAENowEWAgEPpAENqwEWAgELrAENswEWAgEHdTh1WgIBJ3I5ckUCASV9OH05AgEjejl6QwIBIYUBOIUBOQIBH4IBOYIBRwIBHY0BOI0BQAIBG4oBOYoBQgIBGZkBOJkBXQIBFpYBOZYBRQIBFKEBOKEBOQIBEp4BOZ4BQwIBEKkBOKkBOQIBDqYBOaYBRwIBDLEBOLEBPgIBCq4BOa4BQgIBCA==</sads:DebugSymbol.Symbol>
   </Sequence>
   <sap2010:WorkflowViewState.ViewStateManager>
     <sap2010:ViewStateManager>
-      <sap2010:ViewStateData Id="InvokeWorkflowFile_1" sap:VirtualizedContainerService.HintSize="314,87" />
-      <sap2010:ViewStateData Id="Sequence_2" sap:VirtualizedContainerService.HintSize="336,211">
+      <sap2010:ViewStateData Id="InvokeWorkflowFile_1" sap:VirtualizedContainerService.HintSize="314,87">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+            <x:Boolean x:Key="IsPinned">False</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="InvokeWorkflowFile_3" sap:VirtualizedContainerService.HintSize="314,87" />
+      <sap2010:ViewStateData Id="Sequence_2" sap:VirtualizedContainerService.HintSize="575,338">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
@@ -167,7 +234,9 @@
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
       <sap2010:ViewStateData Id="WriteLine_2" sap:VirtualizedContainerService.HintSize="210,61" />
-      <sap2010:ViewStateData Id="Sequence_5" sap:VirtualizedContainerService.HintSize="336,347">
+      <sap2010:ViewStateData Id="WriteLine_3" sap:VirtualizedContainerService.HintSize="210,61" />
+      <sap2010:ViewStateData Id="WriteLine_4" sap:VirtualizedContainerService.HintSize="210,61" />
+      <sap2010:ViewStateData Id="Sequence_5" sap:VirtualizedContainerService.HintSize="575,564">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
@@ -176,12 +245,39 @@
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="Assign_1" sap:VirtualizedContainerService.HintSize="314,60" />
-      <sap2010:ViewStateData Id="Assign_4" sap:VirtualizedContainerService.HintSize="314,60" />
-      <sap2010:ViewStateData Id="Assign_2" sap:VirtualizedContainerService.HintSize="314,60" />
-      <sap2010:ViewStateData Id="Assign_3" sap:VirtualizedContainerService.HintSize="314,60" />
+      <sap2010:ViewStateData Id="Assign_1" sap:VirtualizedContainerService.HintSize="242,60" />
+      <sap2010:ViewStateData Id="Assign_4" sap:VirtualizedContainerService.HintSize="242,60" />
+      <sap2010:ViewStateData Id="Assign_2" sap:VirtualizedContainerService.HintSize="242,60" />
+      <sap2010:ViewStateData Id="Assign_3" sap:VirtualizedContainerService.HintSize="242,60" />
+      <sap2010:ViewStateData Id="Sequence_7" sap:VirtualizedContainerService.HintSize="264,484">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="Assign_5" sap:VirtualizedContainerService.HintSize="242,60" />
+      <sap2010:ViewStateData Id="Assign_6" sap:VirtualizedContainerService.HintSize="242,60" />
+      <sap2010:ViewStateData Id="Assign_7" sap:VirtualizedContainerService.HintSize="242,60" />
+      <sap2010:ViewStateData Id="Assign_8" sap:VirtualizedContainerService.HintSize="242,60" />
+      <sap2010:ViewStateData Id="Sequence_8" sap:VirtualizedContainerService.HintSize="264,484">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="If_1" sap:VirtualizedContainerService.HintSize="553,632" />
       <sap2010:ViewStateData Id="InvokeWorkflowFile_2" sap:VirtualizedContainerService.HintSize="314,87" />
-      <sap2010:ViewStateData Id="Sequence_3" sap:VirtualizedContainerService.HintSize="336,758">
+      <sap2010:ViewStateData Id="Sequence_6" sap:VirtualizedContainerService.HintSize="336,211">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="CommentOut_1" sap:VirtualizedContainerService.HintSize="553,289" />
+      <sap2010:ViewStateData Id="Sequence_3" sap:VirtualizedContainerService.HintSize="575,1277">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
@@ -190,7 +286,7 @@
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="Sequence_1" sap:VirtualizedContainerService.HintSize="358,1592">
+      <sap2010:ViewStateData Id="Sequence_1" sap:VirtualizedContainerService.HintSize="597,2440">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
@@ -198,7 +294,7 @@
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="ProcessTransaction_1" sap:VirtualizedContainerService.HintSize="398,2152" />
+      <sap2010:ViewStateData Id="ProcessTransaction_1" sap:VirtualizedContainerService.HintSize="637,2520" />
     </sap2010:ViewStateManager>
   </sap2010:WorkflowViewState.ViewStateManager>
 </Activity>
