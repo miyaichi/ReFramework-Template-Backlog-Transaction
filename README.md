@@ -1,4 +1,4 @@
-# ReFramework-Template-Backlog-Transaction
+# ReFramework Template Backlog Transaction
 
 Backlogの課題をトランザクションとして処理するワークフローテンプレート
 
@@ -36,8 +36,11 @@ Constantsタブ
 1. テンプレート一式をダウンロードします。
 2. project.jsonの"name","description"を修正します。
 3. Data¥Config.xmlxにワークフローの名称、Backlogのスペース名、APIキー、プロジェクトIDリスト、担当者を設定します。
-4. 対象のプロジェクトIDが複数ある場合は、ProcessCase.xamlをコピーして複数用意し、Process.xamlでProcessID毎に別のProcessCase.xamlを呼び出すようにします。
+4. Process.xamlを実装します。
+  <img src='./Process.jpg'>
+   対象のプロジェクトIDが複数ある場合は、ProcessCase.xamlをコピーして複数用意し、Process.xamlでProcessID毎に別のProcessCase.xamlを呼び出すようにします。
 5. ProcessCase.xamlを実装します。
+  <img src='./ProcessCase.jpg'>
   1. Parse Caseの実装
     課題（Issue）と最終コメント（LastComment）の内容から処理に必要なデータを取得します。
   2. Check Dataの実装
