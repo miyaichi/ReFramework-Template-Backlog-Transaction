@@ -109,7 +109,7 @@
         </ActivityAction>
       </ui:ForEach.Body>
     </ui:ForEach>
-    <ui:ForEach x:TypeArguments="x:String" sap2010:Annotation.AnnotationText="完了以外の「未対応（ID:1）」「処理中（ID:2）」「処理済み（ID:3）」を指定します。" DisplayName="Status IDをEndPointに付加" sap2010:WorkflowViewState.IdRef="ForEach`1_2" Values="[{ &quot;1&quot;, &quot;2&quot;, &quot;3&quot; }]">
+    <ui:ForEach x:TypeArguments="x:String" sap2010:Annotation.AnnotationText="完了以外の「未対応（ID:1）」「処理中（ID:2）」を指定します。" DisplayName="Status IDをEndPointに付加" sap2010:WorkflowViewState.IdRef="ForEach`1_2" Values="[{ &quot;1&quot;, &quot;2&quot; }]">
       <ui:ForEach.Body>
         <ActivityAction x:TypeArguments="x:String">
           <ActivityAction.Argument>
@@ -160,7 +160,7 @@
         </ActivityAction>
       </ui:ForEach.Body>
     </ui:ForEach>
-    <sads:DebugSymbol.Symbol>d3VDOlxVc2Vyc1xtaXlhaWNoaS55b3NoaWhpa29cRG9jdW1lbnRzXFVpUGF0aFxSZUZyYW1ld29yay1UZW1wbGF0ZS1CYWNrbG9nLVRyYW5zYWN0aW9uXExpYlxiYWNrbG9nX2dldF9pc3N1ZV9saXN0LnhhbWwlTQOkAQ4CAQFUBVTrCgIBNlUFXA4CATBdBW8SAgEmcAWCARICAR2DAQWQARUCARORAQWVAQoCAQ6WAQWWAakBAgEJlwEFogESAgECVCJUMAIBN1owWn8CATNXMVc7AgExXc8BXfcBAgEuYwtsFgIBJ3DYAXCLAgIBJXYLfxYCAR6LAUWLAVYCARuDAc4DgwHUAwIBGoMBnwODAakDAgEYgwHPAoMB2wICARaDAbUDgwHDAwIBFJEBE5EBJwIBD5MBCZMBzAECARGWAYYBlgGQAQIBDJYBnAGWAaYBAgEKlwHdAZcB5wECAQidAQufARYCAQNkDWsWAgEodw1+FgIBH5MBGpMBnwECARKeAQ2eAZMCAgEEaThpYgIBK2Y5ZkMCASl8OHxcAgEieTl5QwIBIJ4BuAGeAcYBAgEGngE4ngGtAQIBBQ==</sads:DebugSymbol.Symbol>
+    <sads:DebugSymbol.Symbol>d3VDOlxVc2Vyc1xtaXlhaWNoaS55b3NoaWhpa29cRG9jdW1lbnRzXFVpUGF0aFxSZUZyYW1ld29yay1UZW1wbGF0ZS1CYWNrbG9nLVRyYW5zYWN0aW9uXExpYlxiYWNrbG9nX2dldF9pc3N1ZV9saXN0LnhhbWwlTQOkAQ4CAQFUBVTrCgIBNlUFXA4CATBdBW8SAgEmcAWCARICAR2DAQWQARUCARORAQWVAQoCAQ6WAQWWAakBAgEJlwEFogESAgECVCJUMAIBN1owWn8CATNXMVc7AgExXc8BXfcBAgEuYwtsFgIBJ3DMAXDwAQIBJXYLfxYCAR6LAUWLAVYCARuDAc4DgwHUAwIBGoMBnwODAakDAgEYgwHPAoMB2wICARaDAbUDgwHDAwIBFJEBE5EBJwIBD5MBCZMBzAECARGWAYYBlgGQAQIBDJYBnAGWAaYBAgEKlwHdAZcB5wECAQidAQufARYCAQNkDWsWAgEodw1+FgIBH5MBGpMBnwECARKeAQ2eAZMCAgEEaThpYgIBK2Y5ZkMCASl8OHxcAgEieTl5QwIBIJ4BuAGeAcYBAgEGngE4ngGtAQIBBQ==</sads:DebugSymbol.Symbol>
   </Sequence>
   <sap2010:WorkflowViewState.ViewStateManager>
     <sap2010:ViewStateManager>
@@ -191,7 +191,7 @@
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="ForEach`1_2" sap:VirtualizedContainerService.HintSize="314,108">
+      <sap2010:ViewStateData Id="ForEach`1_2" sap:VirtualizedContainerService.HintSize="287,360">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">False</x:Boolean>
@@ -236,7 +236,7 @@
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="backlog_get_issue_list_1" sap:VirtualizedContainerService.HintSize="376,1339" />
+      <sap2010:ViewStateData Id="backlog_get_issue_list_1" sap:VirtualizedContainerService.HintSize="376,1102" />
     </sap2010:ViewStateManager>
   </sap2010:WorkflowViewState.ViewStateManager>
 </Activity>
