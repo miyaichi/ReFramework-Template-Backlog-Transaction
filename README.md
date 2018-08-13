@@ -45,11 +45,11 @@ Constantsタブ
   <br/><img src='./Process.jpg'><br/>
 
 5. ProcessCase.xamlを実装します。
-  1. Parse Caseの実装
+  * Parse Caseの実装
     課題（Issue）と最終コメント（LastComment）の内容から処理に必要なデータを取得します。
-  2. Check Dataの実装
+  * Check Dataの実装
     取得したデータをチェックします。処理が継続できない場合（Business Rule Exceptionに相当）は、BREをThrowするのではなく、AdvanceCaseをFalseに設定して、課題を前任者に差し戻します。処理を継続するものの、申し送り事項がある場合は、Commentに内容を記載します。
-  3. Do Caseの実装
+  * Do Caseの実装
     取得した情報に基づき、処理を行います。処理が正常に終了した場合には、後任者のIDをAssigneeIdにセットします。処理が失敗した場合（Business Rule Exceptionに相当）は、BREをThrowするのではなく、AdvanceCaseをFalseに設定して、課題を前任者に差し戻します。System Exceptionの場合は上位のワークフローでリトライ処理を行います。
     申し送り事項がある場合は、Commentに内容を記載します。
 
