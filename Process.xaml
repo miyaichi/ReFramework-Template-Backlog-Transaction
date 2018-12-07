@@ -73,22 +73,20 @@
     <Flowchart.StartNode>
       <FlowSwitch x:TypeArguments="x:String" x:Name="__ReferenceID0" DisplayName="Flow Switch" Expression="[in_TransactionItem(&quot;ProjectId&quot;).ToString]" sap2010:WorkflowViewState.IdRef="FlowSwitch`1_1">
         <FlowSwitch.Default>
-          <FlowStep x:Name="__ReferenceID1">
-            <ui:InvokeWorkflowFile ContinueOnError="{x:Null}" DisplayName="Invoke ProcessIssue workflow" UnSafe="False" WorkflowFileName="ProcessIssue.xaml">
+          <FlowStep x:Name="__ReferenceID1" sap2010:WorkflowViewState.IdRef="FlowStep_2">
+            <ui:InvokeWorkflowFile ContinueOnError="{x:Null}" DisplayName="Invoke ProcessIssue workflow" sap2010:WorkflowViewState.IdRef="InvokeWorkflowFile_2" UnSafe="False" WorkflowFileName="ProcessIssue.xaml">
               <ui:InvokeWorkflowFile.Arguments>
                 <InArgument x:TypeArguments="scg:Dictionary(x:String, x:Object)" x:Key="in_Config">[in_Config]</InArgument>
                 <InArgument x:TypeArguments="sd:DataRow" x:Key="in_TransactionItem">[in_TransactionItem]</InArgument>
               </ui:InvokeWorkflowFile.Arguments>
-              <sap2010:WorkflowViewState.IdRef>InvokeWorkflowFile_2</sap2010:WorkflowViewState.IdRef>
             </ui:InvokeWorkflowFile>
-            <sap2010:WorkflowViewState.IdRef>FlowStep_2</sap2010:WorkflowViewState.IdRef>
           </FlowStep>
         </FlowSwitch.Default>
       </FlowSwitch>
     </Flowchart.StartNode>
     <x:Reference>__ReferenceID0</x:Reference>
     <x:Reference>__ReferenceID1</x:Reference>
-    <sads:DebugSymbol.Symbol>d2JDOlxVc2Vyc1xZb3NoaWhpa28gTWl5YWljaGlcRG9jdW1lbnRzXFVpUGF0aFxSZUZyYW1ld29yay1UZW1wbGF0ZS1CYWNrbG9nLVRyYW5zYWN0aW9uXFByb2Nlc3MueGFtbAZIA1wPAgEBSmtKoQECAQhNDVMlAgECT2RPbwIBBlBVUGkCAQRNigFNnQECAQM=</sads:DebugSymbol.Symbol>
+    <sads:DebugSymbol.Symbol>d2JDOlxVc2Vyc1xZb3NoaWhpa28gTWl5YWljaGlcRG9jdW1lbnRzXFVpUGF0aFxSZUZyYW1ld29yay1UZW1wbGF0ZS1CYWNrbG9nLVRyYW5zYWN0aW9uXFByb2Nlc3MueGFtbAZIA1oPAgEBSmtKoQECAQhNDVIlAgECT2RPbwIBBlBVUGkCAQRNwQFN1AECAQM=</sads:DebugSymbol.Symbol>
   </Flowchart>
   <sap2010:WorkflowViewState.ViewStateManager>
     <sap2010:ViewStateManager>
