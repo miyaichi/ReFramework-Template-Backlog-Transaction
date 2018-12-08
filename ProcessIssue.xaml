@@ -75,7 +75,7 @@
   </TextExpression.ReferencesForImplementation>
   <Flowchart sap2010:Annotation.AnnotationText="課題を処理します。&#xA;・課題の情報は変数IssueにJsonオブジェクトとして格納されます。&#xA;  取得できる情報の内容は、下記を参照ください。&#xA;  https://developer.nulab-inc.com/ja/docs/backlog/api/2/get-issue/&#xA;・BRE(BusinessRuleException)に相当する場合、BREをThrowせず、Backlogの課題を前任者に戻すようにします。&#xA;・処理が終了した場合は、AssigneeIdに後任者のIDをセットします。&#xA;・CommentにはBacklogに投稿するコメント（課題の処理完了、差し戻しなどのステータス、申し送り事項）をセットします。" DisplayName="ProcessIssue" sap2010:WorkflowViewState.IdRef="Flowchart_1">
     <Flowchart.Variables>
-      <Variable x:TypeArguments="x:Boolean" Name="AdvanceCase" />
+      <Variable x:TypeArguments="x:Boolean" Name="AdvanceIssue" />
       <Variable x:TypeArguments="njl:JObject" Name="Issue" />
       <Variable x:TypeArguments="x:String" Name="AssigneeId" />
       <Variable x:TypeArguments="x:String" Name="Comment" />
@@ -100,7 +100,7 @@
                 <Sequence sap2010:Annotation.AnnotationText="取得した情報をチェックし、処理できないものであれば、前任者に差し戻す" DisplayName="Check Data" sap2010:WorkflowViewState.IdRef="Sequence_3">
                   <Assign sap2010:WorkflowViewState.IdRef="Assign_1">
                     <Assign.To>
-                      <OutArgument x:TypeArguments="x:Boolean">[AdvanceCase]</OutArgument>
+                      <OutArgument x:TypeArguments="x:Boolean">[AdvanceIssue]</OutArgument>
                     </Assign.To>
                     <Assign.Value>
                       <InArgument x:TypeArguments="x:Boolean">True</InArgument>
@@ -108,13 +108,13 @@
                   </Assign>
                 </Sequence>
                 <FlowStep.Next>
-                  <FlowDecision x:Name="__ReferenceID4" Condition="[AdvanceCase]" DisplayName="処理可能か" sap2010:WorkflowViewState.IdRef="FlowDecision_2">
+                  <FlowDecision x:Name="__ReferenceID4" Condition="[AdvanceIssue]" DisplayName="処理可能か" sap2010:WorkflowViewState.IdRef="FlowDecision_2">
                     <FlowDecision.True>
                       <FlowStep x:Name="__ReferenceID5" sap2010:WorkflowViewState.IdRef="FlowStep_3">
                         <Sequence sap2010:Annotation.AnnotationText="課題を処理する" DisplayName="Do Issue" sap2010:WorkflowViewState.IdRef="Sequence_4">
                           <Assign sap2010:WorkflowViewState.IdRef="Assign_2">
                             <Assign.To>
-                              <OutArgument x:TypeArguments="x:Boolean">[AdvanceCase]</OutArgument>
+                              <OutArgument x:TypeArguments="x:Boolean">[AdvanceIssue]</OutArgument>
                             </Assign.To>
                             <Assign.Value>
                               <InArgument x:TypeArguments="x:Boolean">True</InArgument>
@@ -122,7 +122,7 @@
                           </Assign>
                         </Sequence>
                         <FlowStep.Next>
-                          <FlowDecision x:Name="__ReferenceID6" Condition="[AdvanceCase]" DisplayName="処理完了か" sap2010:WorkflowViewState.IdRef="FlowDecision_1">
+                          <FlowDecision x:Name="__ReferenceID6" Condition="[AdvanceIssue]" DisplayName="処理完了か" sap2010:WorkflowViewState.IdRef="FlowDecision_1">
                             <FlowDecision.True>
                               <FlowStep x:Name="__ReferenceID7" sap2010:WorkflowViewState.IdRef="FlowStep_1">
                                 <Sequence sap2010:Annotation.AnnotationText="課題を後任者に進める" DisplayName="Advance Case" sap2010:WorkflowViewState.IdRef="Sequence_6">
@@ -137,14 +137,13 @@
                                       <InArgument x:TypeArguments="x:String">3</InArgument>
                                     </Assign.Value>
                                   </Assign>
-                                  <Assign>
+                                  <Assign sap2010:WorkflowViewState.IdRef="Assign_6">
                                     <Assign.To>
                                       <OutArgument x:TypeArguments="x:String">[Comment]</OutArgument>
                                     </Assign.To>
                                     <Assign.Value>
                                       <InArgument x:TypeArguments="x:String">処理しました</InArgument>
                                     </Assign.Value>
-                                    <sap2010:WorkflowViewState.IdRef>Assign_6</sap2010:WorkflowViewState.IdRef>
                                   </Assign>
                                   <ui:InvokeWorkflowFile ContinueOnError="{x:Null}" DisplayName="Invoke Update Issue workflow" sap2010:WorkflowViewState.IdRef="InvokeWorkflowFile_6" UnSafe="False" WorkflowFileName="Backlog\Update Issue.xaml">
                                     <ui:InvokeWorkflowFile.Arguments>
@@ -198,16 +197,15 @@
                                       <InArgument x:TypeArguments="x:String">1</InArgument>
                                     </Assign.Value>
                                   </Assign>
-                                  <Assign>
+                                  <Assign sap2010:WorkflowViewState.IdRef="Assign_7">
                                     <Assign.To>
                                       <OutArgument x:TypeArguments="x:String">[Comment]</OutArgument>
                                     </Assign.To>
                                     <Assign.Value>
                                       <InArgument x:TypeArguments="x:String">差し戻します</InArgument>
                                     </Assign.Value>
-                                    <sap2010:WorkflowViewState.IdRef>Assign_7</sap2010:WorkflowViewState.IdRef>
                                   </Assign>
-                                  <ui:InvokeWorkflowFile ContinueOnError="{x:Null}" DisplayName="Invoke Update Issue workflow" UnSafe="False" WorkflowFileName="Backlog\Update Issue.xaml">
+                                  <ui:InvokeWorkflowFile ContinueOnError="{x:Null}" DisplayName="Invoke Update Issue workflow" sap2010:WorkflowViewState.IdRef="InvokeWorkflowFile_7" UnSafe="False" WorkflowFileName="Backlog\Update Issue.xaml">
                                     <ui:InvokeWorkflowFile.Arguments>
                                       <InArgument x:TypeArguments="x:String" x:Key="SpaceName">[in_Config("Backlog_SpaceName").ToString]</InArgument>
                                       <InArgument x:TypeArguments="x:String" x:Key="APIKey">[in_Config("Backlog_APIKey").ToString]</InArgument>
@@ -232,7 +230,6 @@
                                       <InArgument x:TypeArguments="x:String" x:Key="Comment">[Comment]</InArgument>
                                       <OutArgument x:TypeArguments="njl:JObject" x:Key="IssueData" />
                                     </ui:InvokeWorkflowFile.Arguments>
-                                    <sap2010:WorkflowViewState.IdRef>InvokeWorkflowFile_7</sap2010:WorkflowViewState.IdRef>
                                   </ui:InvokeWorkflowFile>
                                 </Sequence>
                               </FlowStep>
@@ -260,7 +257,7 @@
     <x:Reference>__ReferenceID6</x:Reference>
     <x:Reference>__ReferenceID7</x:Reference>
     <x:Reference>__ReferenceID0</x:Reference>
-    <sads:DebugSymbol.Symbol>d2dDOlxVc2Vyc1xZb3NoaWhpa28gTWl5YWljaGlcRG9jdW1lbnRzXFVpUGF0aFxSZUZyYW1ld29yay1UZW1wbGF0ZS1CYWNrbG9nLVRyYW5zYWN0aW9uXFByb2Nlc3NJc3N1ZS54YW1sMkwDiAIPAgEBVQleFAIBPWENYZIBAgE8ZBFtHAIBN29Db1ICATW0ASHtASwCAR1yGXskAgEYfUt9WgIBFoABIa8BLAIBAlYLXSMCAT5lE2wcAgE4uQEjwAEsAgExwQEjyAEsAgEtyQEj0QEsAgEp0gEj7AE7AgEecxt6JAIBGYQBI4sBLAIBEowBI5QBLAIBDpUBI64BOwIBA1tMW1MCAUVaRlppAgFEWUVZawIBQlhIWHECAUBWwQFW3gECAT9qP2pDAgE7Z0BnTQIBOb4BTr4BcwIBNLsBT7sBWwIBMsYBTsYBTwIBMMMBT8MBWQIBLs4BTs4BVAIBLMsBT8sBWAIBKtYBXtYBgQECASjoAV7oAWcCASbVAV3VAYMBAgEk1AFg1AGJAQIBItoBX9oBaQIBINIBoAHSAbsBAgEfeEd4SwIBHHVIdVUCARqJAU6JAU8CARWGAU+GAVkCARORAU6RAVQCARGOAU+OAVgCAQ+ZAV6ZAYEBAgENqwFeqwFnAgELmAFdmAGDAQIBCZcBYJcBiQECAQedAV+dAWkCAQWVAdcBlQHyAQIBBA==</sads:DebugSymbol.Symbol>
+    <sads:DebugSymbol.Symbol>d2dDOlxVc2Vyc1xZb3NoaWhpa28gTWl5YWljaGlcRG9jdW1lbnRzXFVpUGF0aFxSZUZyYW1ld29yay1UZW1wbGF0ZS1CYWNrbG9nLVRyYW5zYWN0aW9uXFByb2Nlc3NJc3N1ZS54YW1sMkwDhQIPAgEBVQleFAIBPWENYZIBAgE8ZBFtHAIBN29Db1MCATWzASHqASwCAR1yGXskAgEYfUt9WwIBFoABIa4BLAIBAlYLXSMCAT5lE2wcAgE4uAEjvwEsAgExwAEjxwEsAgEtyAEjzwEsAgEp0AEj6QE7AgEecxt6JAIBGYQBI4sBLAIBEowBI5MBLAIBDpQBI60BOwIBA1tMW1MCAUVaRlppAgFEWUVZawIBQlhIWHECAUBWwQFW3gECAT9qP2pDAgE7Z0BnTgIBOb0BTr0BcwIBNLoBT7oBWwIBMsUBTsUBTwIBMMIBT8IBWQIBLs0BTs0BVAIBLMoBT8oBWAIBKtQBXtQBgQECASjmAV7mAWcCASbTAV3TAYMBAgEk0gFg0gGJAQIBItgBX9gBaQIBINAB1wHQAfIBAgEfeEd4SwIBHHVIdVYCARqJAU6JAU8CARWGAU+GAVkCARORAU6RAVQCARGOAU+OAVgCAQ+YAV6YAYEBAgENqgFeqgFnAgELlwFdlwGDAQIBCZYBYJYBiQECAQecAV+cAWkCAQWUAdcBlAHyAQIBBA==</sads:DebugSymbol.Symbol>
   </Flowchart>
   <sap2010:WorkflowViewState.ViewStateManager>
     <sap2010:ViewStateManager>
@@ -323,7 +320,7 @@
       <sap2010:ViewStateData Id="Assign_5" sap:VirtualizedContainerService.HintSize="314,60" />
       <sap2010:ViewStateData Id="Assign_7" sap:VirtualizedContainerService.HintSize="314,60" />
       <sap2010:ViewStateData Id="InvokeWorkflowFile_7" sap:VirtualizedContainerService.HintSize="314,87" />
-      <sap2010:ViewStateData Id="Sequence_8" sap:VirtualizedContainerService.HintSize="336,539">
+      <sap2010:ViewStateData Id="Sequence_8" sap:VirtualizedContainerService.HintSize="200,80">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
