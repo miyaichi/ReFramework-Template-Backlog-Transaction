@@ -37,7 +37,7 @@ Constantsタブ
 
 2. project.jsonの"name","description"を修正します。
 
-3. Data¥Config.xmlxにワークフローの名称、Backlogのスペース名、APIキー、プロジェクトIDリスト、担当者を設定します。
+3. Data¥Config.xslxにワークフローの名称、Backlogのスペース名、APIキー、プロジェクトIDリスト、担当者を設定します。
 
 4. Process.xamlを実装します。
   対象のプロジェクトIDが複数ある場合は、ProcessIssue.xamlをコピーして複数用意し、Process.xamlでProcessID毎に別のProcessIssue.xamlを呼び出すようにします。
