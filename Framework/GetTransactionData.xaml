@@ -73,7 +73,6 @@
       <AssemblyReference>UiPath.UiAutomation.Activities</AssemblyReference>
       <AssemblyReference>UiPath.System.Activities</AssemblyReference>
       <AssemblyReference>UiPath.Excel</AssemblyReference>
-      <AssemblyReference>System.Runtime.WindowsRuntime</AssemblyReference>
       <AssemblyReference>System.ValueTuple</AssemblyReference>
     </sco:Collection>
   </TextExpression.ReferencesForImplementation>
@@ -86,7 +85,7 @@
             <InArgument x:TypeArguments="x:String" x:Key="APIKey">[in_Config("Backlog_APIKey").ToString]</InArgument>
             <InArgument x:TypeArguments="x:String" x:Key="ProjectIDs">[in_Config("Backlog_ProjectIDs").ToString]</InArgument>
             <InArgument x:TypeArguments="x:String" x:Key="AssigneeIDs">[in_Config("Backlog_AssigneeIDs").ToString]</InArgument>
-            <InArgument x:TypeArguments="x:String" x:Key="StatusIDs">1,2,3</InArgument>
+            <InArgument x:TypeArguments="x:String" x:Key="StatusIDs">1,2</InArgument>
             <OutArgument x:TypeArguments="sd:DataTable" x:Key="Issues">[io_TransactionData]</OutArgument>
           </ui:InvokeWorkflowFile.Arguments>
         </ui:InvokeWorkflowFile>
@@ -144,7 +143,7 @@
         </Sequence>
       </If.Then>
     </If>
-    <sads:DebugSymbol.Symbol>d3dDOlxVc2Vyc1xZb3NoaWhpa28gTWl5YWljaGlcRG9jdW1lbnRzXFVpUGF0aFxSZUZyYW1ld29yay1UZW1wbGF0ZS1CYWNrbG9nLVRyYW5zYWN0aW9uXEZyYW1ld29ya1xHZXRUcmFuc2FjdGlvbkRhdGEueGFtbB9QA5QBDgIBAVEFXgoCARtfBXQKAgERdQWSAQoCAQJRE1EvAgEcUwlcIQIBHl8TX08CARJhCWgSAgEXawlyEgIBE3UTdTgCAQN3CZABFAIBBFpIWlwCASlWQ1ZpAgEnV0dXcQIBJVhIWHMCASNVRlVvAgEhWUZZSwIBIFO7AVPUAQIBH2Y2ZmkCARpjN2NMAgEYcDZwPwIBFm03bUwCARR4C38UAgENgAELhwEUAgEJiAELjwEUAgEFfTZ9WgIBEHo3ekoCAQ6FATaFAWECAQyCATeCAU4CAQqNATaNAV8CAQiKATeKAU4CAQY=</sads:DebugSymbol.Symbol>
+    <sads:DebugSymbol.Symbol>d3dDOlxVc2Vyc1xZb3NoaWhpa28gTWl5YWljaGlcRG9jdW1lbnRzXFVpUGF0aFxSZUZyYW1ld29yay1UZW1wbGF0ZS1CYWNrbG9nLVRyYW5zYWN0aW9uXEZyYW1ld29ya1xHZXRUcmFuc2FjdGlvbkRhdGEueGFtbB9PA5MBDgIBAVAFXQoCARteBXMKAgERdAWRAQoCAQJQE1AvAgEcUglbIQIBHl4TXk8CARJgCWcSAgEXaglxEgIBE3QTdDgCAQN2CY8BFAIBBFlIWVwCASlVQ1VpAgEnVkdWcQIBJVdIV3MCASNURlRvAgEhWEZYSQIBIFK7AVLUAQIBH2U2ZWkCARpiN2JMAgEYbzZvPwIBFmw3bEwCARR3C34UAgENfwuGARQCAQmHAQuOARQCAQV8NnxaAgEQeTd5SgIBDoQBNoQBYQIBDIEBN4EBTgIBCowBNowBXwIBCIkBN4kBTgIBBg==</sads:DebugSymbol.Symbol>
   </Sequence>
   <sap2010:WorkflowViewState.ViewStateManager>
     <sap2010:ViewStateManager>
