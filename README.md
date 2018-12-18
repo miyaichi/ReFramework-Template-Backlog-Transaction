@@ -24,6 +24,7 @@ Settingタブ
 | Backlog_APIKey           | -                          | APIキー                                                                                      |
 | Backlog_ProjectIDs       | -                          | 対象のプロジェクトID（複数ある場合は、 <Project ID>,<Project ID>のようにカンマ区切りで列挙） |
 | Backlog_AssigneeIDs      | -                          | 処理する課題の担当者                                                                         |
+| Backlog_WorkFolder       | Data\Work                  | 課題の添付ファイルをダウンロードする作業フォルダ                                             |
 
 Constantsタブ
 
@@ -46,7 +47,7 @@ Constantsタブ
 
 5. ProcessIssue.xamlを実装します。
   * Parse Issueの実装
-    課題（Issue）の内容から処理に必要なデータを取得します。
+    課題（Issue）の内容から処理に必要なデータを取得します。添付ファイルがあれば、作業フォルダにダウンロードします。
   * Check Dataの実装
     取得したデータをチェックします。処理が継続できない場合（Business Rule Exceptionに相当）は、BREをThrowするのではなく、AdvanceIssueをFalseに設定して、課題を前任者に差し戻します。処理を継続するものの、申し送り事項がある場合は、Commentに内容を記載します。
   * Do Issueの実装

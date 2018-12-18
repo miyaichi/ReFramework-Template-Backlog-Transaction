@@ -10,6 +10,7 @@
  xmlns:scg="clr-namespace:System.Collections.Generic;assembly=mscorlib"
  xmlns:sco="clr-namespace:System.Collections.ObjectModel;assembly=mscorlib"
  xmlns:sd="clr-namespace:System.Data;assembly=System.Data"
+ xmlns:si="clr-namespace:System.IO;assembly=mscorlib"
  xmlns:ui="http://schemas.uipath.com/workflow/activities"
  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
   <x:Members>
@@ -45,6 +46,7 @@
       <x:String>UiPath.Core.Activities</x:String>
       <x:String>Newtonsoft.Json.Linq</x:String>
       <x:String>Newtonsoft.Json</x:String>
+      <x:String>System.Xml.Serialization</x:String>
     </sco:Collection>
   </TextExpression.NamespacesForImplementation>
   <TextExpression.ReferencesForImplementation>
@@ -71,6 +73,7 @@
       <AssemblyReference>Newtonsoft.Json</AssemblyReference>
       <AssemblyReference>System.ComponentModel.Composition</AssemblyReference>
       <AssemblyReference>System.ValueTuple</AssemblyReference>
+      <AssemblyReference>System.Runtime.WindowsRuntime</AssemblyReference>
     </sco:Collection>
   </TextExpression.ReferencesForImplementation>
   <Flowchart sap2010:Annotation.AnnotationText="課題を処理します。&#xA;・課題の情報は変数IssueにJsonオブジェクトとして格納されます。&#xA;  取得できる情報の内容は、下記を参照ください。&#xA;  https://developer.nulab-inc.com/ja/docs/backlog/api/2/get-issue/&#xA;・BRE(BusinessRuleException)に相当する場合、BREをThrowせず、Backlogの課題を前任者に戻すようにします。&#xA;・処理が終了した場合は、AssigneeIdに後任者のIDをセットします。&#xA;・CommentにはBacklogに投稿するコメント（課題の処理完了、差し戻しなどのステータス、申し送り事項）をセットします。" DisplayName="ProcessIssue" sap2010:WorkflowViewState.IdRef="Flowchart_1">
@@ -82,7 +85,11 @@
     </Flowchart.Variables>
     <Flowchart.StartNode>
       <FlowStep x:Name="__ReferenceID1" sap2010:WorkflowViewState.IdRef="FlowStep_6">
-        <Sequence sap2010:Annotation.AnnotationText="課題情報を取得する" DisplayName="Get Issue" sap2010:WorkflowViewState.IdRef="Sequence_1">
+        <Sequence sap2010:Annotation.AnnotationText="課題情報を取得する。添付ファイルがあれば、作業用フォルダにダウンロードする。" DisplayName="Get Issue" sap2010:WorkflowViewState.IdRef="Sequence_1">
+          <Sequence.Variables>
+            <Variable x:TypeArguments="sd:DataTable" Name="Attachments" />
+            <Variable x:TypeArguments="x:Boolean" Name="Exists" />
+          </Sequence.Variables>
           <ui:InvokeWorkflowFile ContinueOnError="{x:Null}" DisplayName="Invoke Get Issue Data workflow" sap2010:WorkflowViewState.IdRef="InvokeWorkflowFile_5" UnSafe="False" WorkflowFileName="Backlog\Get Issue Data.xaml">
             <ui:InvokeWorkflowFile.Arguments>
               <InArgument x:TypeArguments="x:String" x:Key="SpaceName">[in_Config("Backlog_SpaceName").ToString]</InArgument>
@@ -91,6 +98,56 @@
               <OutArgument x:TypeArguments="njl:JObject" x:Key="IssueData">[Issue]</OutArgument>
             </ui:InvokeWorkflowFile.Arguments>
           </ui:InvokeWorkflowFile>
+          <ui:PathExists DisplayName="Path Exists" Exists="[Exists]" sap2010:WorkflowViewState.IdRef="PathExists_1" Path="[in_Config(&quot;Backlog_WorkFolder&quot;).ToString]" PathType="Folder" />
+          <If Condition="[Exists]" DisplayName="Clean up work folder" sap2010:WorkflowViewState.IdRef="If_1">
+            <If.Then>
+              <ui:ForEach x:TypeArguments="si:FileInfo" CurrentIndex="{x:Null}" DisplayName="Clean up work files" sap2010:WorkflowViewState.IdRef="ForEach`1_1" Values="[New DirectoryInfo(in_Config(&quot;Backlog_WorkFolder&quot;).ToString).GetFiles(&quot;*.*&quot;)]">
+                <ui:ForEach.Body>
+                  <ActivityAction x:TypeArguments="si:FileInfo">
+                    <ActivityAction.Argument>
+                      <DelegateInArgument x:TypeArguments="si:FileInfo" Name="FileInfo" />
+                    </ActivityAction.Argument>
+                    <Sequence DisplayName="Body" sap2010:WorkflowViewState.IdRef="Sequence_10">
+                      <WriteLine DisplayName="Write Line" sap2010:WorkflowViewState.IdRef="WriteLine_4" Text="Remove" />
+                      <ui:Delete ContinueOnError="{x:Null}" sap2010:WorkflowViewState.IdRef="Delete_1" Path="[FileInfo.FullName]" />
+                    </Sequence>
+                  </ActivityAction>
+                </ui:ForEach.Body>
+              </ui:ForEach>
+            </If.Then>
+            <If.Else>
+              <ui:CreateDirectory ContinueOnError="{x:Null}" DisplayName="Create work folder" sap2010:WorkflowViewState.IdRef="CreateDirectory_1" Path="[in_Config(&quot;Backlog_WorkFolder&quot;).ToString]" />
+            </If.Else>
+          </If>
+          <ui:InvokeWorkflowFile ContinueOnError="{x:Null}" DisplayName="Invoke Get Attachments workflow" sap2010:WorkflowViewState.IdRef="InvokeWorkflowFile_8" UnSafe="False" WorkflowFileName="Backlog\Get Attachments.xaml">
+            <ui:InvokeWorkflowFile.Arguments>
+              <InArgument x:TypeArguments="x:String" x:Key="SpaceName">[in_Config("Backlog_SpaceName").ToString]</InArgument>
+              <InArgument x:TypeArguments="x:String" x:Key="APIKey">[in_Config("Backlog_APIKey").ToString]</InArgument>
+              <InArgument x:TypeArguments="x:String" x:Key="IssueId">[in_TransactionItem("id").ToString]</InArgument>
+              <OutArgument x:TypeArguments="sd:DataTable" x:Key="Attachments">[Attachments]</OutArgument>
+            </ui:InvokeWorkflowFile.Arguments>
+          </ui:InvokeWorkflowFile>
+          <ui:ForEachRow CurrentIndex="{x:Null}" DataTable="[Attachments]" DisplayName="Download attachments" sap2010:WorkflowViewState.IdRef="ForEachRow_1">
+            <ui:ForEachRow.Body>
+              <ActivityAction x:TypeArguments="sd:DataRow">
+                <ActivityAction.Argument>
+                  <DelegateInArgument x:TypeArguments="sd:DataRow" Name="Attachment" />
+                </ActivityAction.Argument>
+                <Sequence DisplayName="Body" sap2010:WorkflowViewState.IdRef="Sequence_9">
+                  <WriteLine DisplayName="Write Line" sap2010:WorkflowViewState.IdRef="WriteLine_5" Text="Download" />
+                  <ui:InvokeWorkflowFile ContinueOnError="{x:Null}" DisplayName="Invoke Download Attachment workflow" sap2010:WorkflowViewState.IdRef="InvokeWorkflowFile_9" UnSafe="False" WorkflowFileName="Backlog\Download Attachment.xaml">
+                    <ui:InvokeWorkflowFile.Arguments>
+                      <InArgument x:TypeArguments="x:String" x:Key="SpaceName">[in_Config("Backlog_SpaceName").ToString]</InArgument>
+                      <InArgument x:TypeArguments="x:String" x:Key="APIKey">[in_Config("Backlog_APIKey").ToString]</InArgument>
+                      <InArgument x:TypeArguments="x:String" x:Key="IssueId">[in_TransactionItem("id").ToString]</InArgument>
+                      <InArgument x:TypeArguments="x:String" x:Key="AttachmentId">[Attachment("id").ToString]</InArgument>
+                      <InArgument x:TypeArguments="x:String" x:Key="Name">[Environment.CurrentDirectory + "\" + in_Config("Backlog_WorkFolder").ToString + "\" + Attachment("name").ToString]</InArgument>
+                    </ui:InvokeWorkflowFile.Arguments>
+                  </ui:InvokeWorkflowFile>
+                </Sequence>
+              </ActivityAction>
+            </ui:ForEachRow.Body>
+          </ui:ForEachRow>
         </Sequence>
         <FlowStep.Next>
           <FlowStep x:Name="__ReferenceID2" sap2010:WorkflowViewState.IdRef="FlowStep_5">
@@ -257,12 +314,64 @@
     <x:Reference>__ReferenceID6</x:Reference>
     <x:Reference>__ReferenceID7</x:Reference>
     <x:Reference>__ReferenceID0</x:Reference>
-    <sads:DebugSymbol.Symbol>d2dDOlxVc2Vyc1xZb3NoaWhpa28gTWl5YWljaGlcRG9jdW1lbnRzXFVpUGF0aFxSZUZyYW1ld29yay1UZW1wbGF0ZS1CYWNrbG9nLVRyYW5zYWN0aW9uXFByb2Nlc3NJc3N1ZS54YW1sMkwDhQIPAgEBVQleFAIBPWENYZIBAgE8ZBFtHAIBN29Db1MCATWzASHqASwCAR1yGXskAgEYfUt9WwIBFoABIa4BLAIBAlYLXSMCAT5lE2wcAgE4uAEjvwEsAgExwAEjxwEsAgEtyAEjzwEsAgEp0AEj6QE7AgEecxt6JAIBGYQBI4sBLAIBEowBI5MBLAIBDpQBI60BOwIBA1tMW1MCAUVaRlppAgFEWUVZawIBQlhIWHECAUBWwQFW3gECAT9qP2pDAgE7Z0BnTgIBOb0BTr0BcwIBNLoBT7oBWwIBMsUBTsUBTwIBMMIBT8IBWQIBLs0BTs0BVAIBLMoBT8oBWAIBKtQBXtQBgQECASjmAV7mAWcCASbTAV3TAYMBAgEk0gFg0gGJAQIBItgBX9gBaQIBINAB1wHQAfIBAgEfeEd4SwIBHHVIdVYCARqJAU6JAU8CARWGAU+GAVkCARORAU6RAVQCARGOAU+OAVgCAQ+YAV6YAYEBAgENqgFeqgFnAgELlwFdlwGDAQIBCZYBYJYBiQECAQecAV+cAWkCAQWUAdcBlAHyAQIBBA==</sads:DebugSymbol.Symbol>
+    <sads:DebugSymbol.Symbol>d2dDOlxVc2Vyc1xZb3NoaWhpa28gTWl5YWljaGlcRG9jdW1lbnRzXFVpUGF0aFxSZUZyYW1ld29yay1UZW1wbGF0ZS1CYWNrbG9nLVRyYW5zYWN0aW9uXFByb2Nlc3NJc3N1ZS54YW1sUk8DvgIPAgEBWAmXARQCAT2aAQ2aAZIBAgE8nQERpgEcAgE3qAFDqAFTAgE17AEhowIsAgEdqwEZtAEkAgEYtgFLtgFbAgEWuQEh5wEsAgECXQtkIwIBaWULZcUBAgFkZgt5EAIBVnoLgQEjAgFNggELlgEbAgE+ngETpQEcAgE48QEj+AEsAgEx+QEjgAIsAgEtgQIjiAIsAgEpiQIjogI7AgEerAEbswEkAgEZvQEjxAEsAgESxQEjzAEsAgEOzQEj5gE7AgEDYkxiUwIBcGFGYWkCAW9gRWBrAgFtX0hfcQIBa13BAV3eAQIBamU7ZUUCAWdlemWwAQIBZWYZZiMCAVdoD3QcAgFcdw930QECAVl/T39cAgFUfkZ+aQIBU31FfWsCAVF8SHxxAgFPesIBeuABAgFOggE8ggFLAgFLiAERkwEcAgE/owE/owFDAgE7oAFAoAFOAgE59gFO9gFzAgE08wFP8wFbAgEy/gFO/gFPAgEw+wFP+wFZAgEuhgJOhgJUAgEsgwJPgwJYAgEqjQJejQKBAQIBKJ8CXp8CZwIBJowCXYwCgwECASSLAmCLAokBAgEikQJfkQJpAgEgiQLXAYkC8gECAR+xAUexAUsCARyuAUiuAVYCARrCAU7CAU8CARW/AU+/AVkCARPKAU7KAVQCARHHAU/HAVgCAQ/RAV7RAYEBAgEN4wFe4wFnAgEL0AFd0AGDAQIBCc8BYM8BiQECAQfVAV/VAWkCAQXNAdcBzQHyAQIBBGioAWiLAgIBY24VcSACAV13mAF3zgECAVqJAROJAXcCAUmKAROSASsCAUBvF295AgFhcBdwhQECAV6JAWqJAXQCAUqOAU6OAXECAUiNAU2NAXMCAUaPAVOPAW4CAUWMAVCMAXkCAUOKAc4BigHwAQIBQpABS5ABvgECAUFvbm92AgFicG1wggECAV8=</sads:DebugSymbol.Symbol>
   </Flowchart>
   <sap2010:WorkflowViewState.ViewStateManager>
     <sap2010:ViewStateManager>
       <sap2010:ViewStateData Id="InvokeWorkflowFile_5" sap:VirtualizedContainerService.HintSize="314,87" />
-      <sap2010:ViewStateData Id="Sequence_1" sap:VirtualizedContainerService.HintSize="200,80">
+      <sap2010:ViewStateData Id="PathExists_1" sap:VirtualizedContainerService.HintSize="314,52">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">False</x:Boolean>
+            <x:Boolean x:Key="IsPinned">False</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="WriteLine_4" sap:VirtualizedContainerService.HintSize="210,62" />
+      <sap2010:ViewStateData Id="Delete_1" sap:VirtualizedContainerService.HintSize="210,22" />
+      <sap2010:ViewStateData Id="Sequence_10" sap:VirtualizedContainerService.HintSize="232,248">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="ForEach`1_1" sap:VirtualizedContainerService.HintSize="200,52">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">False</x:Boolean>
+            <x:Boolean x:Key="IsPinned">False</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="CreateDirectory_1" sap:VirtualizedContainerService.HintSize="200,22" />
+      <sap2010:ViewStateData Id="If_1" sap:VirtualizedContainerService.HintSize="314,52">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">False</x:Boolean>
+            <x:Boolean x:Key="IsPinned">False</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="InvokeWorkflowFile_8" sap:VirtualizedContainerService.HintSize="314,87" />
+      <sap2010:ViewStateData Id="WriteLine_5" sap:VirtualizedContainerService.HintSize="314,62" />
+      <sap2010:ViewStateData Id="InvokeWorkflowFile_9" sap:VirtualizedContainerService.HintSize="314,87" />
+      <sap2010:ViewStateData Id="Sequence_9" sap:VirtualizedContainerService.HintSize="336,313">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="ForEachRow_1" sap:VirtualizedContainerService.HintSize="314,52">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">False</x:Boolean>
+            <x:Boolean x:Key="IsPinned">False</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="Sequence_1" sap:VirtualizedContainerService.HintSize="336,658">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
@@ -390,8 +499,8 @@
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <av:Point x:Key="ShapeLocation">200,127.5</av:Point>
-            <av:Size x:Key="ShapeSize">200,80</av:Size>
-            <av:PointCollection x:Key="ConnectorLocation">300,207.5 300,273.5</av:PointCollection>
+            <av:Size x:Key="ShapeSize">200,112</av:Size>
+            <av:PointCollection x:Key="ConnectorLocation">300,239.5 300,273.5</av:PointCollection>
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
